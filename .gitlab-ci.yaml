@@ -1,0 +1,45 @@
+# You can create this variable in settings -> gitlab -> CI/CD -> Variable
+# $DH_USERNAME
+# $DH_PASSWORD
+image: docker:latest
+
+variables:
+  REPOSITORY_URL: raihan1607/todolist_v1_app
+  IMAGE_TAG: latest
+
+services:
+- docker:dind
+
+before_script:
+  - docker login --username=$DH_USERNAME --password=$DH_PASSWORD
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - echo "Building image..."
+    - docker build 
+      -t todolist_v1_app:latest 
+      --build-arg PORT=$PORT 
+      --no-cache .
+    - echo "Tagging image..."
+    - docker tag todolist_v1_app:latest $REPOSITORY_URL:latest
+    - echo "Pushing image..."
+    - docker push $REPOSITORY_URL:latest
+  only:
+    - master
+
+deploy:
+  stage: deploy
+  script:
+    - docker stop todolist_v1_app || true && docker rm todolist_v1_app || true
+    - docker container run -dt -p $PORT:$PORT --name todolist_v1_app $REPOSITORY_URL:latest
+    - docker image prune -f
+  only:
+    - master
+    
+
+    
