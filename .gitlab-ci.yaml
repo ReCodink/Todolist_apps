@@ -1,4 +1,4 @@
-# You can create this variable in settings -> gitlab -> CI/CD -> Variable
+# You can create something this variable in settings -> gitlab -> CI/CD -> Variable
 # $DH_USERNAME
 # $DH_PASSWORD
 image: docker:latest
